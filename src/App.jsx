@@ -1,38 +1,34 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
-// Hook personnalisé pour compter les renders
+// Hook simple pour compter les renders (compatible React Compiler)
 function useRenderCounter(componentName) {
-  const renderCount = useRef(0);
+  const [renderCount, setRenderCount] = useState(0);
   const [highlight, setHighlight] = useState(false);
-
-  renderCount.current += 1;
-
+  
+  // Incrémente le compteur à chaque render
   useEffect(() => {
+    setRenderCount(prev => prev + 1);
     setHighlight(true);
     const timer = setTimeout(() => setHighlight(false), 200);
     return () => clearTimeout(timer);
   });
-
-  return { count: renderCount.current, highlight };
+  
+  return { count: renderCount, highlight };
 }
 
 // Composant UserCard - devrait pas se re-rendre si l'utilisateur ne change pas
 function UserCard({ user, onUpdateStats }) {
   const { count, highlight } = useRenderCounter('UserCard');
-
+  
   return (
-    <div
-      className={`bg-white p-4 rounded-lg shadow-md border-2 transition-all duration-200 ${
-        highlight ? 'border-red-500 bg-red-50' : 'border-gray-200'
-      }`}
-    >
+    <div className={`bg-white p-4 rounded-lg shadow-md border-2 transition-all duration-200 ${
+      highlight ? 'border-red-500 bg-red-50' : 'border-gray-200'
+    }`}>
       <div className="flex justify-between items-start mb-3">
         <h3 className="font-semibold text-lg">{user.name}</h3>
-        <span
-          className={`text-xs px-2 py-1 rounded ${
-            highlight ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-600'
-          }`}
-        >
+        <span className={`text-xs px-2 py-1 rounded ${
+          highlight ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-600'
+        }`}>
           Renders: {count}
         </span>
       </div>
@@ -51,20 +47,16 @@ function UserCard({ user, onUpdateStats }) {
 // Composant Statistics - devrait pas se re-rendre si les stats ne changent pas
 function Statistics({ stats, theme }) {
   const { count, highlight } = useRenderCounter('Statistics');
-
+  
   return (
-    <div
-      className={`p-4 rounded-lg shadow-md border-2 transition-all duration-200 ${
-        theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white'
-      } ${highlight ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}
-    >
+    <div className={`p-4 rounded-lg shadow-md border-2 transition-all duration-200 ${
+      theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white'
+    } ${highlight ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}>
       <div className="flex justify-between items-center mb-3">
         <h3 className="font-semibold">Statistiques</h3>
-        <span
-          className={`text-xs px-2 py-1 rounded ${
-            highlight ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-600'
-          }`}
-        >
+        <span className={`text-xs px-2 py-1 rounded ${
+          highlight ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-600'
+        }`}>
           Renders: {count}
         </span>
       </div>
@@ -74,21 +66,15 @@ function Statistics({ stats, theme }) {
           <div className="text-sm text-gray-500">Utilisateurs</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-green-500">
-            {stats.active}
-          </div>
+          <div className="text-2xl font-bold text-green-500">{stats.active}</div>
           <div className="text-sm text-gray-500">Actifs</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-purple-500">
-            {stats.revenue}
-          </div>
+          <div className="text-2xl font-bold text-purple-500">{stats.revenue}</div>
           <div className="text-sm text-gray-500">Revenus</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-orange-500">
-            {stats.growth}%
-          </div>
+          <div className="text-2xl font-bold text-orange-500">{stats.growth}%</div>
           <div className="text-sm text-gray-500">Croissance</div>
         </div>
       </div>
@@ -100,99 +86,99 @@ function Statistics({ stats, theme }) {
 function Timer({ onTick }) {
   const { count, highlight } = useRenderCounter('Timer');
   const [time, setTime] = useState(new Date());
-
+  
   useEffect(() => {
     const interval = setInterval(() => {
       const newTime = new Date();
       setTime(newTime);
       onTick(newTime);
     }, 1000);
-
+    
     return () => clearInterval(interval);
   }, [onTick]);
-
+  
   return (
-    <div
-      className={`bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-lg shadow-md border-2 transition-all duration-200 ${
-        highlight ? 'border-red-500' : 'border-transparent'
-      }`}
-    >
+    <div className={`bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-lg shadow-md border-2 transition-all duration-200 ${
+      highlight ? 'border-red-500' : 'border-transparent'
+    }`}>
       <div className="flex justify-between items-center mb-2">
         <h3 className="font-semibold">Horloge en temps réel</h3>
-        <span
-          className={`text-xs px-2 py-1 rounded ${
-            highlight ? 'bg-red-500 text-white' : 'bg-white bg-opacity-20'
-          }`}
-        >
+        <span className={`text-xs px-2 py-1 rounded ${
+          highlight ? 'bg-red-500 text-white' : 'bg-white bg-opacity-20'
+        }`}>
           Renders: {count}
         </span>
       </div>
-      <div className="text-2xl font-mono">{time.toLocaleTimeString()}</div>
+      <div className="text-2xl font-mono">
+        {time.toLocaleTimeString()}
+      </div>
     </div>
   );
+}
+
+// Hook personnalisé pour les stats (compatible React Compiler)
+function useStats() {
+  const [stats, setStats] = useState({
+    users: 150,
+    active: 89,
+    revenue: '€12.5K',
+    growth: 23
+  });
+  
+  const updateStats = (userId) => {
+    setStats(prevStats => ({
+      ...prevStats,
+      active: prevStats.active + 1
+    }));
+  };
+  
+  return { stats, updateStats };
+}
+
+// Hook pour le timer (compatible React Compiler)
+function useTimer() {
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [notifications, setNotifications] = useState(0);
+  
+  const handleTimeTick = (newTime) => {
+    setCurrentTime(newTime);
+    if (newTime.getSeconds() % 10 === 0) {
+      setNotifications(prev => prev + 1);
+    }
+  };
+  
+  return { currentTime, notifications, handleTimeTick };
 }
 
 // Composant principal
 export default function App() {
   const { count, highlight } = useRenderCounter('App');
-  const [users] = useState([
+  const { stats, updateStats } = useStats();
+  const { currentTime, notifications, handleTimeTick } = useTimer();
+  const [theme, setTheme] = useState('light');
+  
+  const users = [
     { id: 1, name: 'Alice Martin', email: 'alice@example.com', role: 'Admin' },
     { id: 2, name: 'Bob Durand', email: 'bob@example.com', role: 'User' },
-    {
-      id: 3,
-      name: 'Claire Moreau',
-      email: 'claire@example.com',
-      role: 'Manager',
-    },
-  ]);
-
-  const [stats, setStats] = useState({
-    users: 150,
-    active: 89,
-    revenue: '€12.5K',
-    growth: 23,
-  });
-
-  const [theme, setTheme] = useState('light');
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [notifications, setNotifications] = useState(0);
-
-  // Ces fonctions vont causer des re-renders à chaque fois sans React Compiler
-  const handleUpdateStats = (userId) => {
-    setStats((prevStats) => ({
-      ...prevStats,
-      active: prevStats.active + 1,
-    }));
-  };
-
-  const handleTimeTick = (newTime) => {
-    setCurrentTime(newTime);
-    // Simule des notifications qui arrivent
-    if (newTime.getSeconds() % 10 === 0) {
-      setNotifications((prev) => prev + 1);
-    }
-  };
-
+    { id: 3, name: 'Claire Moreau', email: 'claire@example.com', role: 'Manager' }
+  ];
+  
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
   };
-
+  
   return (
-    <div
-      className={`min-h-screen p-6 transition-colors duration-300 ${
-        theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'
-      }`}
-    >
+    <div className={`min-h-screen p-6 transition-colors duration-300 ${
+      theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'
+    }`}>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div
-          className={`mb-6 p-4 rounded-lg shadow-md border-2 transition-all duration-200 ${
-            theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white'
-          } ${highlight ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}
-        >
+        <div className={`mb-6 p-4 rounded-lg shadow-md border-2 transition-all duration-200 ${
+          theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white'
+        } ${highlight ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}>
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold">Dashboard de Performance</h1>
+              <h1 className="text-3xl font-bold text-black">Dashboard de Performance</h1>
               <p className="text-gray-500 mt-1">
                 Démonstration des re-renders inutiles sans React Compiler
               </p>
@@ -200,9 +186,7 @@ export default function App() {
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <div className="text-sm text-gray-500">Notifications</div>
-                <div className="text-2xl font-bold text-red-500">
-                  {notifications}
-                </div>
+                <div className="text-2xl font-bold text-red-500">{notifications}</div>
               </div>
               <button
                 onClick={toggleTheme}
@@ -210,77 +194,64 @@ export default function App() {
               >
                 {theme === 'light' ? '🌙' : '☀️'} Thème
               </button>
-              <span
-                className={`text-xs px-2 py-1 rounded ${
-                  highlight
-                    ? 'bg-red-500 text-white'
-                    : 'bg-gray-200 text-gray-600'
-                }`}
-              >
+              <span className={`text-xs px-2 py-1 rounded ${
+                highlight ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-600'
+              }`}>
                 App Renders: {count}
               </span>
             </div>
           </div>
         </div>
-
-        {/* Problème visuel */}
-        <div className="mb-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 rounded">
-          <h2 className="font-semibold text-yellow-800 mb-2">
-            🚨 Problème de Performance
-          </h2>
-          <p className="text-yellow-700 text-sm">
-            Regardez les compteurs "Renders" ! Chaque composant se re-rend même
-            quand ses données n'ont pas changé.
+        
+        {/* Status React Compiler */}
+        <div className="mb-6 p-4 bg-green-100 border-l-4 border-green-500 rounded">
+          <h2 className="font-semibold text-green-800 mb-2">✅ Code Compatible React Compiler</h2>
+          <p className="text-green-700 text-sm">
+            Ce code utilise maintenant des patterns compatibles avec React Compiler.
             <br />
-            <strong>Timer</strong> force tout à se re-rendre →{' '}
-            <strong>UserCard</strong> et <strong>Statistics</strong> se
-            re-rendent inutilement.
+            Relancez <code className="bg-green-200 px-1 rounded">npx react-compiler-healthcheck@latest</code> pour vérifier !
           </p>
         </div>
-
+        
+        {/* Problème visuel */}
+        <div className="mb-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 rounded">
+          <h2 className="font-semibold text-yellow-800 mb-2">🚨 Problème de Performance (AVANT React Compiler)</h2>
+          <p className="text-yellow-700 text-sm">
+            Regardez les compteurs "Renders" ! Chaque composant se re-rend même quand ses données n'ont pas changé.
+            <br />
+            <strong>Timer</strong> force tout à se re-rendre → <strong>UserCard</strong> et <strong>Statistics</strong> se re-rendent inutilement.
+          </p>
+        </div>
+        
         {/* Timer */}
         <div className="mb-6">
           <Timer onTick={handleTimeTick} />
         </div>
-
+        
         {/* Statistics */}
         <div className="mb-6">
           <Statistics stats={stats} theme={theme} />
         </div>
-
+        
         {/* Users Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {users.map((user) => (
+          {users.map(user => (
             <UserCard
               key={user.id}
               user={user}
-              onUpdateStats={handleUpdateStats}
+              onUpdateStats={updateStats}
             />
           ))}
         </div>
-
+        
         {/* Instructions */}
         <div className="mt-8 p-4 bg-blue-100 border-l-4 border-blue-500 rounded">
-          <h2 className="font-semibold text-blue-800 mb-2">
-            📋 Instructions pour la démo
-          </h2>
+          <h2 className="font-semibold text-blue-800 mb-2">📋 Instructions pour la démo</h2>
           <div className="text-blue-700 text-sm space-y-1">
-            <p>
-              1. Observez les compteurs "Renders" en rouge qui clignotent
-              constamment
-            </p>
-            <p>
-              2. Notez que UserCard et Statistics se re-rendent même si leurs
-              données n'ont pas changé
-            </p>
-            <p>
-              3. Installez maintenant le React Compiler et observez la
-              différence !
-            </p>
-            <p>
-              4. Après installation, seuls les composants avec des données
-              modifiées se re-rendront
-            </p>
+            <p>1. Relancez le healthcheck : <code className="bg-blue-200 px-1 rounded">npx react-compiler-healthcheck@latest</code></p>
+            <p>2. Vous devriez maintenant voir "Successfully compiled X out of X components"</p>
+            <p>3. Observez les compteurs "Renders" qui clignotent constamment (AVANT)</p>
+            <p>4. Installez le React Compiler et observez la différence (APRÈS) !</p>
           </div>
         </div>
       </div>
