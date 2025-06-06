@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.7",
+    "babel-plugin-react-compiler": "^19.0.0-beta-af1b7da-20250417",
+    "lucide-react": "^0.513.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
